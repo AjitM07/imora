@@ -17,7 +17,7 @@ export default function CategoryGrid() {
 
         .cat-scroll {
           display: flex;
-          justify-content: center;
+          justify-content: flex-start;
           gap: 24px;
           padding: 0 32px;
           overflow-x: auto;
@@ -26,10 +26,14 @@ export default function CategoryGrid() {
         }
         .cat-scroll::-webkit-scrollbar { display: none; }
 
+        .cat-card-wrapper {
+          flex-shrink: 0;
+          scroll-snap-align: center;
+        }
+
         /* ── Arch card ── */
         .arch-card {
           position: relative;
-          flex-shrink: 0;
           width: clamp(260px, 28vw, 380px);
           aspect-ratio: 3 / 4;
           border-radius: 999px 999px 16px 16px;
@@ -144,6 +148,12 @@ export default function CategoryGrid() {
           text-shadow: 0 2px 12px rgba(0,0,0,0.25);
         }
 
+        @media (min-width: 1800px) {
+          .cat-scroll {
+            justify-content: center;
+          }
+        }
+
         @media (max-width: 1024px) {
           .cat-scroll {
             justify-content: flex-start;
@@ -151,13 +161,23 @@ export default function CategoryGrid() {
             padding: 0 20px;
           }
           .arch-card {
-            width: clamp(220px, 65vw, 320px);
+            width: clamp(220px, 45vw, 320px);
           }
         }
 
         @media (max-width: 640px) {
+          .cat-scroll {
+            scroll-snap-type: x mandatory;
+            scroll-padding: 0 24px;
+            padding: 0 24px;
+            gap: 16px;
+            justify-content: flex-start;
+          }
+          .cat-card-wrapper {
+            width: calc(100vw - 48px);
+          }
           .arch-card {
-            width: clamp(200px, 72vw, 300px);
+            width: 100% !important;
           }
           .arch-text {
             bottom: 24px;
@@ -191,6 +211,7 @@ export default function CategoryGrid() {
           {categories.map((cat, i) => (
             <motion.div
               key={cat.slug}
+              className="cat-card-wrapper"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

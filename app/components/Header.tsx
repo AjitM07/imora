@@ -59,19 +59,17 @@ export default function Header() {
           }}
         >
           {/* Logo */}
-          <Link href="/" style={{ textDecoration: "none" }}>
-            <h1
+          <Link href="/" style={{ textDecoration: "none", display: "inline-block" }}>
+            <img
+              src="/images/logo-transparent.png?v=4"
+              alt="Imora"
               style={{
-                fontFamily: "var(--font-serif)",
-                fontSize: "1.6rem",
-                fontWeight: 400,
-                letterSpacing: "0.18em",
-                color: "var(--color-brown)",
-                margin: 0,
+                width: 111,
+                height: 31,
+                objectFit: "contain",
+                display: "block",
               }}
-            >
-              IMORA
-            </h1>
+            />
           </Link>
 
           {/* Desktop Nav */}
