@@ -23,10 +23,16 @@ export default function ProductPage() {
   const [demoMode, setDemoMode] = useState(false);
 
   const { addToCart } = useCart();
+  const isEnvMissing = !process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || !process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN;
 
   useEffect(() => {
     async function loadShopifyProduct() {
-      if (!slug) return;
+      if (!slug || isEnvMissing) {
+        if (isEnvMissing) {
+          setDemoMode(true);
+        }
+        return;
+      }
       try {
         const shopifyProd = await getProductBySlug(slug);
         if (shopifyProd) {
@@ -42,7 +48,7 @@ export default function ProductPage() {
       }
     }
     loadShopifyProduct();
-  }, [slug]);
+  }, [slug, isEnvMissing]);
 
   if (!product) {
     return (
@@ -75,6 +81,10 @@ export default function ProductPage() {
   };
 
   const handleAddToCart = async () => {
+    if (isEnvMissing) {
+      setError("Shopify environment variables are missing on Vercel. Please set them in settings.");
+      return;
+    }
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       setError("Please select a size first.");
       return;
@@ -91,7 +101,10 @@ export default function ProductPage() {
         variantId = "gid://shopify/ProductVariant/49081459540196"; // Fallback test snowboard
       }
 
-      await addToCart(variantId);
+      const checkoutUrl = await addToCart(variantId);
+      if (!checkoutUrl) {
+        setError("Could not add item to cart. Please verify Shopify configuration.");
+      }
     } catch (err) {
       console.error("Error adding to cart:", err);
       setError("Failed to add product to cart. Please try again.");
@@ -101,6 +114,10 @@ export default function ProductPage() {
   };
 
   const handleBuyNow = async () => {
+    if (isEnvMissing) {
+      setError("Shopify environment variables are missing on Vercel. Please set them in settings.");
+      return;
+    }
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       setError("Please select a size first.");
       return;
@@ -215,8 +232,29 @@ export default function ProductPage() {
               </div>
             )}
 
+            {/* Environment Variables Missing Warning */}
+            {isEnvMissing && (
+              <div style={{
+                color: "#7f1d1d",
+                fontSize: "0.78rem",
+                fontFamily: "var(--font-sans)",
+                margin: "0 0 16px 0",
+                background: "#fef2f2",
+                padding: "10px 14px",
+                borderRadius: 4,
+                border: "1px solid #fca5a5",
+                lineHeight: 1.4,
+                maxWidth: 400
+              }}>
+                <strong>⚠️ Vercel Configuration Missing:</strong>
+                <div style={{ marginTop: 4 }}>
+                  Your Shopify API credentials are not set up on Vercel. Please add <code>NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN</code> and <code>NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN</code> in your Vercel Project Settings, then redeploy.
+                </div>
+              </div>
+            )}
+
             {/* Demo Mode Notice */}
-            {demoMode && (
+            {demoMode && !isEnvMissing && (
               <div style={{
                 color: "#b45309",
                 fontSize: "0.75rem",
