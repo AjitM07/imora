@@ -37,6 +37,7 @@ export default function ProductCarousel({
       <style>{`
         /* ── Premium product card ── */
         .pcard {
+        border-radius:20px;
           display: block;
           text-decoration: none;
           position: relative;
@@ -50,6 +51,7 @@ export default function ProductCarousel({
 
         /* Image frame — sharp geometric */
         .pcard-frame {
+          
           position: relative;
           aspect-ratio: 3 / 4.2;
           border-radius: 0;
